@@ -28,7 +28,7 @@
       </div>
       <div class="flex items-center gap-3">
         <span class="text-xs text-gray-500" id="refreshTimer">Refreshing in 30s</span>
-        <button onclick="fetchData()" class="text-xs px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Refresh</button>
+        <button id="refreshBtn" onclick="doRefresh()" class="text-xs px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 active:bg-gray-600 text-gray-300 transition select-none touch-manipulation">↻ Refresh</button>
       </div>
     </div>
 
@@ -184,6 +184,14 @@
           <div class="flex flex-wrap gap-2">${steps}</div>
         </div>`;
       }).join('');
+    }
+
+    function doRefresh() {
+      const btn = document.getElementById('refreshBtn');
+      btn.textContent = '↻ Refreshing...';
+      btn.disabled = true;
+      fetchData();
+      setTimeout(() => { btn.textContent = '↻ Refresh'; btn.disabled = false; }, 1000);
     }
 
     let countdown = 30;
