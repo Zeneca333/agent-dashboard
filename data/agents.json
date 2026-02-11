@@ -1,108 +1,92 @@
 {
-  "lastUpdated": "2026-02-12T05:40:00.000Z",
+  "lastUpdated": "2026-02-12T06:09:00+10:00",
   "mainAgent": {
-    "name": "Yoshi",
+    "name": "Yoshi 🦖",
     "status": "active",
-    "currentTask": "Building Agent Dashboard & orchestrating overnight builds",
-    "upSince": "2026-02-11T22:00:00.000Z"
+    "currentTask": "Managing sub-agents, updating dashboard, chatting with Zen",
+    "upSince": "2026-02-12T05:02:00+10:00"
   },
   "subAgents": [
     {
-      "id": "subagent:build-agent-dashboard",
-      "label": "Dashboard Builder",
-      "task": "Build real-time agent dashboard with dark theme UI",
+      "id": "agent:main:subagent:984550db-74f5-4b9c-b3d3-85e3644c75db",
+      "label": "dota2-chunk1-scraper",
+      "task": "Chunk 1/5: Pull pro match data from OpenDota API, save as clean CSVs",
       "status": "running",
-      "startedAt": "2026-02-12T05:43:00.000Z",
+      "startedAt": "2026-02-12T06:06:00+10:00",
       "completedAt": null,
-      "progress": "Building HTML/CSS/JS, setting up Vercel deploy",
-      "deliverables": ["index.html", "vercel.json", "agents.json schema"],
-      "error": null
-    },
-    {
-      "id": "subagent:dota2-model",
-      "label": "Dota 2 Betting Model",
-      "task": "Full model rebuild: scrape OpenDota, feature engineering, training",
-      "status": "running",
-      "startedAt": "2026-02-11T23:15:00.000Z",
-      "completedAt": null,
-      "progress": "Scraping match data from OpenDota API (batch 4/12)",
-      "deliverables": ["model.pkl", "backtest-results.csv"],
-      "error": null
-    },
-    {
-      "id": "subagent:stoa-of-ai",
-      "label": "The Stoa of AI",
-      "task": "Build business plan, marketing strategy, and Vercel landing page",
-      "status": "completed",
-      "startedAt": "2026-02-11T20:00:00.000Z",
-      "completedAt": "2026-02-12T01:30:00.000Z",
-      "progress": "All deliverables complete",
-      "deliverables": ["business-plan.md", "landing-page/index.html", "competitor-research.md"],
-      "error": null
-    },
-    {
-      "id": "subagent:paul-graham-tutor",
-      "label": "Paul Graham Tutor",
-      "task": "Index 240 PG essays, build conversational tutor agent",
-      "status": "completed",
-      "startedAt": "2026-02-10T14:00:00.000Z",
-      "completedAt": "2026-02-10T16:45:00.000Z",
-      "progress": "Essays indexed, agent registered, manual relay working",
-      "deliverables": ["essay-index.json", "pg-tutor agent config"],
-      "error": null
-    },
-    {
-      "id": "subagent:content-brain-seeder",
-      "label": "Content Brain Seeder",
-      "task": "Seed 30 newsletter drafts into Supabase",
-      "status": "stalled",
-      "startedAt": "2026-02-12T03:00:00.000Z",
-      "completedAt": null,
-      "progress": "12/30 drafts seeded — hit Supabase rate limit",
-      "deliverables": ["seeded-drafts.log"],
-      "error": "Supabase rate limit exceeded, retrying in 60s"
-    },
-    {
-      "id": "subagent:polymarket-research",
-      "label": "Polymarket Bot Research",
-      "task": "Research automated Polymarket trading bot architecture",
-      "status": "queued",
-      "startedAt": null,
-      "completedAt": null,
-      "progress": "Waiting in queue",
+      "progress": "Scraping pro matches from OpenDota API (target: 200-500 matches)",
       "deliverables": [],
       "error": null
+    },
+    {
+      "id": "agent:main:subagent:c483d597-182a-4a80-b97c-267f31a6e37e",
+      "label": "build-agent-dashboard",
+      "task": "Build Agent Dashboard — real-time status page for all agents",
+      "status": "completed",
+      "startedAt": "2026-02-12T05:43:00+10:00",
+      "completedAt": "2026-02-12T05:45:00+10:00",
+      "progress": "Deployed to Vercel",
+      "deliverables": ["https://github.com/Zeneca333/agent-dashboard/pull/1", "https://agent-dashboard-gules-psi.vercel.app"],
+      "error": null
+    },
+    {
+      "id": "overnight-za2",
+      "label": "overnight-za2",
+      "task": "ZenAcademy 2.0 membership portal prototype",
+      "status": "cancelled",
+      "startedAt": "2026-02-11T22:00:00+10:00",
+      "completedAt": "2026-02-12T05:28:00+10:00",
+      "progress": "Cancelled by Zen",
+      "deliverables": [],
+      "error": null
+    },
+    {
+      "id": "overnight-dota2-v1",
+      "label": "overnight-dota2-v1",
+      "task": "Dota 2 betting model — full build (monolithic, pre-chunking)",
+      "status": "failed",
+      "startedAt": "2026-02-11T22:00:00+10:00",
+      "completedAt": null,
+      "progress": "Timed out — no commits landed. Replaced by chunked approach.",
+      "deliverables": [],
+      "error": "Timeout: 15min wasn't enough for full model build"
     }
   ],
   "taskQueue": [
     {
-      "name": "Dota 2 Model — Feature Engineering",
+      "name": "Dota 2 Chunk 2: Feature Engineering",
       "priority": "high",
-      "estimatedChunks": 4,
-      "status": "in-progress"
+      "estimatedChunks": 1,
+      "status": "queued"
+    },
+    {
+      "name": "Dota 2 Chunk 3: Model Training",
+      "priority": "high",
+      "estimatedChunks": 1,
+      "status": "queued"
+    },
+    {
+      "name": "Dota 2 Chunk 4: Backtesting",
+      "priority": "high",
+      "estimatedChunks": 1,
+      "status": "queued"
+    },
+    {
+      "name": "Dota 2 Chunk 5: Predictions Dashboard",
+      "priority": "high",
+      "estimatedChunks": 1,
+      "status": "queued"
+    },
+    {
+      "name": "Seed 30 newsletter drafts into Content Brain",
+      "priority": "medium",
+      "estimatedChunks": 1,
+      "status": "queued"
     },
     {
       "name": "ERC-8004 Newsletter Draft",
-      "priority": "high",
-      "estimatedChunks": 2,
-      "status": "queued"
-    },
-    {
-      "name": "Polymarket Bot Research",
       "priority": "medium",
-      "estimatedChunks": 3,
-      "status": "queued"
-    },
-    {
-      "name": "Digital Products Storefront",
-      "priority": "medium",
-      "estimatedChunks": 5,
-      "status": "queued"
-    },
-    {
-      "name": "Memory System — Phase 3 JSONL Compression",
-      "priority": "low",
-      "estimatedChunks": 2,
+      "estimatedChunks": 1,
       "status": "queued"
     }
   ]
