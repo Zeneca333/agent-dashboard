@@ -1,0 +1,109 @@
+{
+  "lastUpdated": "2026-02-12T05:40:00.000Z",
+  "mainAgent": {
+    "name": "Yoshi",
+    "status": "active",
+    "currentTask": "Building Agent Dashboard & orchestrating overnight builds",
+    "upSince": "2026-02-11T22:00:00.000Z"
+  },
+  "subAgents": [
+    {
+      "id": "subagent:build-agent-dashboard",
+      "label": "Dashboard Builder",
+      "task": "Build real-time agent dashboard with dark theme UI",
+      "status": "running",
+      "startedAt": "2026-02-12T05:43:00.000Z",
+      "completedAt": null,
+      "progress": "Building HTML/CSS/JS, setting up Vercel deploy",
+      "deliverables": ["index.html", "vercel.json", "agents.json schema"],
+      "error": null
+    },
+    {
+      "id": "subagent:dota2-model",
+      "label": "Dota 2 Betting Model",
+      "task": "Full model rebuild: scrape OpenDota, feature engineering, training",
+      "status": "running",
+      "startedAt": "2026-02-11T23:15:00.000Z",
+      "completedAt": null,
+      "progress": "Scraping match data from OpenDota API (batch 4/12)",
+      "deliverables": ["model.pkl", "backtest-results.csv"],
+      "error": null
+    },
+    {
+      "id": "subagent:stoa-of-ai",
+      "label": "The Stoa of AI",
+      "task": "Build business plan, marketing strategy, and Vercel landing page",
+      "status": "completed",
+      "startedAt": "2026-02-11T20:00:00.000Z",
+      "completedAt": "2026-02-12T01:30:00.000Z",
+      "progress": "All deliverables complete",
+      "deliverables": ["business-plan.md", "landing-page/index.html", "competitor-research.md"],
+      "error": null
+    },
+    {
+      "id": "subagent:paul-graham-tutor",
+      "label": "Paul Graham Tutor",
+      "task": "Index 240 PG essays, build conversational tutor agent",
+      "status": "completed",
+      "startedAt": "2026-02-10T14:00:00.000Z",
+      "completedAt": "2026-02-10T16:45:00.000Z",
+      "progress": "Essays indexed, agent registered, manual relay working",
+      "deliverables": ["essay-index.json", "pg-tutor agent config"],
+      "error": null
+    },
+    {
+      "id": "subagent:content-brain-seeder",
+      "label": "Content Brain Seeder",
+      "task": "Seed 30 newsletter drafts into Supabase",
+      "status": "stalled",
+      "startedAt": "2026-02-12T03:00:00.000Z",
+      "completedAt": null,
+      "progress": "12/30 drafts seeded — hit Supabase rate limit",
+      "deliverables": ["seeded-drafts.log"],
+      "error": "Supabase rate limit exceeded, retrying in 60s"
+    },
+    {
+      "id": "subagent:polymarket-research",
+      "label": "Polymarket Bot Research",
+      "task": "Research automated Polymarket trading bot architecture",
+      "status": "queued",
+      "startedAt": null,
+      "completedAt": null,
+      "progress": "Waiting in queue",
+      "deliverables": [],
+      "error": null
+    }
+  ],
+  "taskQueue": [
+    {
+      "name": "Dota 2 Model — Feature Engineering",
+      "priority": "high",
+      "estimatedChunks": 4,
+      "status": "in-progress"
+    },
+    {
+      "name": "ERC-8004 Newsletter Draft",
+      "priority": "high",
+      "estimatedChunks": 2,
+      "status": "queued"
+    },
+    {
+      "name": "Polymarket Bot Research",
+      "priority": "medium",
+      "estimatedChunks": 3,
+      "status": "queued"
+    },
+    {
+      "name": "Digital Products Storefront",
+      "priority": "medium",
+      "estimatedChunks": 5,
+      "status": "queued"
+    },
+    {
+      "name": "Memory System — Phase 3 JSONL Compression",
+      "priority": "low",
+      "estimatedChunks": 2,
+      "status": "queued"
+    }
+  ]
+}

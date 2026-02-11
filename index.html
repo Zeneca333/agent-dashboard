@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config={darkMode:'class',theme:{extend:{}}}</script>
+  <style>
+    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    body { background: #0a0a0f; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    .card { background: #12121a; border: 1px solid #1e1e2e; }
+    .glow-green { box-shadow: 0 0 12px rgba(34,197,94,0.15); }
+    .glow-red { box-shadow: 0 0 12px rgba(239,68,68,0.15); }
+    .glow-yellow { box-shadow: 0 0 12px rgba(234,179,8,0.15); }
+  </style>
+</head>
+<body class="text-gray-200 min-h-screen p-4 md:p-8">
+  <div class="max-w-6xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between flex-wrap gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+          <span class="text-2xl">🤖</span> Agent Dashboard
+        </h1>
+        <p class="text-sm text-gray-500 mt-1" id="lastUpdated">Loading...</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span class="text-xs text-gray-500" id="refreshTimer">Refreshing in 30s</span>
+        <button onclick="fetchData()" class="text-xs px-3 py-1.5 rounded bg-gray-800 hover:bg-gray-700 text-gray-300 transition">Refresh</button>
+      </div>
+    </div>
+
+    <!-- Main Agent -->
+    <div id="mainAgent" class="card rounded-xl p-5"></div>
+
+    <!-- Sub Agents -->
+    <div>
+      <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Sub-Agents</h2>
+      <div id="subAgents" class="grid gap-3 md:grid-cols-2"></div>
+    </div>
+
+    <!-- Task Queue -->
+    <div>
+      <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Task Queue</h2>
+      <div id="taskQueue" class="card rounded-xl divide-y divide-gray-800/50"></div>
+    </div>
+  </div>
+
+  <script>
+    const STATUS = {
+      running:   { color: 'bg-green-500', text: 'text-green-400', border: 'border-green-500/20', glow: 'glow-green', label: 'Running' },
+      completed: { color: 'bg-blue-500',  text: 'text-blue-400',  border: 'border-blue-500/20',  glow: '', label: 'Completed' },
+      failed:    { color: 'bg-red-500',   text: 'text-red-400',   border: 'border-red-500/20',   glow: 'glow-red', label: 'Failed' },
+      stalled:   { color: 'bg-yellow-500',text: 'text-yellow-400',border: 'border-yellow-500/20',glow: 'glow-yellow', label: 'Stalled' },
+      queued:    { color: 'bg-gray-500',  text: 'text-gray-400',  border: 'border-gray-500/20',  glow: '', label: 'Queued' },
+      active:    { color: 'bg-green-500', text: 'text-green-400', border: 'border-green-500/20', glow: 'glow-green', label: 'Active' },
+    };
+
+    const PRIORITY = { high: 'text-red-400 bg-red-500/10', medium: 'text-yellow-400 bg-yellow-500/10', low: 'text-gray-400 bg-gray-500/10' };
+
+    function timeAgo(iso) {
+      if (!iso) return '—';
+      const s = Math.floor((Date.now() - new Date(iso)) / 1000);
+      if (s < 60) return 'just now';
+      if (s < 3600) return `${Math.floor(s/60)}m ago`;
+      if (s < 86400) return `${Math.floor(s/3600)}h ago`;
+      return `${Math.floor(s/86400)}d ago`;
+    }
+
+    function duration(start, end) {
+      if (!start) return '—';
+      const ms = (end ? new Date(end) : new Date()) - new Date(start);
+      const m = Math.floor(ms/60000);
+      if (m < 60) return `${m}m`;
+      return `${Math.floor(m/60)}h ${m%60}m`;
+    }
+
+    function badge(status) {
+      const s = STATUS[status] || STATUS.queued;
+      const pulse = status === 'running' ? 'pulse-dot' : '';
+      return `<span class="inline-flex items-center gap-1.5 text-xs font-medium ${s.text}"><span class="w-2 h-2 rounded-full ${s.color} ${pulse}"></span>${s.label}</span>`;
+    }
+
+    function renderMain(agent) {
+      const s = STATUS[agent.status] || STATUS.active;
+      document.getElementById('mainAgent').innerHTML = `
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-3">
+              <span class="text-lg font-bold text-white">${agent.name}</span>
+              ${badge(agent.status)}
+            </div>
+            <p class="text-sm text-gray-300">${agent.currentTask}</p>
+            <p class="text-xs text-gray-500">Up since ${timeAgo(agent.upSince)} · ${duration(agent.upSince)}</p>
+          </div>
+        </div>`;
+      document.getElementById('mainAgent').className = `card rounded-xl p-5 ${s.glow}`;
+    }
+
+    function renderSubAgents(agents) {
+      const sorted = [...agents].sort((a,b) => {
+        const order = {running:0,stalled:1,queued:2,failed:3,completed:4};
+        return (order[a.status]??5) - (order[b.status]??5);
+      });
+      document.getElementById('subAgents').innerHTML = sorted.map(a => {
+        const s = STATUS[a.status] || STATUS.queued;
+        const err = a.error ? `<p class="text-xs text-red-400 mt-2">⚠ ${a.error}</p>` : '';
+        const dels = a.deliverables?.length ? `<div class="flex flex-wrap gap-1 mt-2">${a.deliverables.map(d=>`<span class="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400">${d}</span>`).join('')}</div>` : '';
+        return `<div class="card rounded-xl p-4 ${s.glow}">
+          <div class="flex items-start justify-between gap-2">
+            <div class="min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-semibold text-sm text-white truncate">${a.label}</span>
+                ${badge(a.status)}
+              </div>
+              <p class="text-xs text-gray-400 mt-1">${a.task}</p>
+            </div>
+            <span class="text-[10px] text-gray-600 whitespace-nowrap">${duration(a.startedAt, a.completedAt)}</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">${a.progress}</p>
+          ${err}${dels}
+          <div class="text-[10px] text-gray-600 mt-2">${a.startedAt ? 'Started '+timeAgo(a.startedAt) : ''}${a.completedAt ? ' · Done '+timeAgo(a.completedAt) : ''}</div>
+        </div>`;
+      }).join('');
+    }
+
+    function renderQueue(tasks) {
+      if (!tasks?.length) { document.getElementById('taskQueue').innerHTML = '<p class="p-4 text-sm text-gray-500">No queued tasks</p>'; return; }
+      document.getElementById('taskQueue').innerHTML = tasks.map(t => {
+        const p = PRIORITY[t.priority] || PRIORITY.low;
+        const active = t.status === 'in-progress';
+        const chunks = t.estimatedChunks ? `<span class="text-[10px] text-gray-600">${t.estimatedChunks} chunks</span>` : '';
+        return `<div class="flex items-center justify-between gap-3 px-4 py-3">
+          <div class="flex items-center gap-3 min-w-0">
+            ${active ? '<span class="w-1.5 h-1.5 rounded-full bg-green-500 pulse-dot flex-shrink-0"></span>' : '<span class="w-1.5 h-1.5 rounded-full bg-gray-700 flex-shrink-0"></span>'}
+            <span class="text-sm text-gray-200 truncate">${t.name}</span>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            ${chunks}
+            <span class="text-[10px] px-2 py-0.5 rounded-full font-medium ${p}">${t.priority}</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    let countdown = 30;
+    function fetchData() {
+      fetch('data/agents.json?t='+Date.now())
+        .then(r => r.json())
+        .then(d => {
+          document.getElementById('lastUpdated').textContent = 'Last updated ' + timeAgo(d.lastUpdated);
+          renderMain(d.mainAgent);
+          renderSubAgents(d.subAgents || []);
+          renderQueue(d.taskQueue || []);
+          countdown = 30;
+        })
+        .catch(e => console.error('Fetch error:', e));
+    }
+
+    setInterval(() => {
+      countdown--;
+      if (countdown <= 0) { fetchData(); return; }
+      document.getElementById('refreshTimer').textContent = `Refreshing in ${countdown}s`;
+    }, 1000);
+
+    fetchData();
+  </script>
+</body>
+</html>
